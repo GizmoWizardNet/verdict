@@ -14,6 +14,10 @@
 		initAuthListener(data.session);
 		theme.init();
 
+		// The browser client updates its own (cookie-backed) session on sign-in/
+		// sign-out/refresh. Re-run +layout.server.ts's `depends('supabase:auth')`
+		// load so server-rendered pages (e.g. /stats) and API routes that read
+		// locals.getSession() see the change without a full page reload.
 		const { data: sub } = supabase.auth.onAuthStateChange(() => {
 			invalidate('supabase:auth');
 		});
@@ -41,7 +45,7 @@
 
 	@media (min-width: 861px) {
 		main {
-			margin-left: calc(250px + 2rem);
+			margin-left: calc(300px + 2rem);
 			padding: 0 1.5rem 4rem;
 		}
 		main > :global(*) {
