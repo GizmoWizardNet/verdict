@@ -2,6 +2,7 @@
 	import { ChevronUp, ChevronDown, Gavel } from 'lucide-svelte';
 	import { session, signInWith } from '$lib/stores/auth';
 	import { playVerdictDeliver, playClick } from '$lib/sfx';
+	import { announceNewBadges } from '$lib/stores/toast';
 
 	export let url: string;
 	export let title: string;
@@ -74,6 +75,7 @@
 			const data = await res.json();
 			upvotes = data.upvotes;
 			downvotes = data.downvotes;
+			if (data.earnedBadges) announceNewBadges(data.earnedBadges);
 		} catch {
 			// revert on failure
 			upvotes = prevUp;

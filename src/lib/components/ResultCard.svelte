@@ -66,6 +66,11 @@
 		padding: 1.1rem 1.2rem;
 		border-radius: var(--radius-md);
 		transition: transform 0.18s var(--ease-aero), box-shadow 0.18s var(--ease-aero);
+		/* .glass sets overflow: hidden (to clip its top sheen highlight), which also
+		   clips the "FIRST VERDICT" / "VERDICT DELIVERED" popup rendered by
+		   VoteButtons since it's positioned absolutely above the card bounds.
+		   Override it here so the popup isn't cut off. */
+		overflow: visible;
 	}
 	.card:hover {
 		transform: translateY(-2px);

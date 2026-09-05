@@ -7,6 +7,7 @@
 	import { supabase } from '$lib/supabaseClient';
 	import { playClick } from '$lib/sfx';
 	import Sidebar from '$lib/components/Sidebar.svelte';
+	import ToastStack from '$lib/components/ToastStack.svelte';
 	import type { LayoutData } from './$types';
 
 	export let data: LayoutData;
@@ -37,6 +38,7 @@
 </svelte:head>
 
 <Sidebar />
+<ToastStack />
 
 <main>
 	<slot />

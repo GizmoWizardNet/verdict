@@ -6,7 +6,7 @@
 	import GlassOrbLoader from '$lib/icons/GlassOrbLoader.svelte';
 	import VerdictMark from '$lib/icons/VerdictMark.svelte';
 
-	let query = $page.url.searchParams.get('q') ?? '';
+	let query = '';
 	let results: any[] = [];
 	let loading = false;
 	let searched = false;
@@ -31,7 +31,25 @@
 		}
 	}
 
-	if (query) runSearch(query);
+	// SvelteKit reuses this same component instance for every navigation to "/"
+	// (e.g. clicking the sidebar's Home link, or the browser back/forward
+	// buttons), it doesn't get remounted. The old code only read the "q" query
+	// param once at the top of <script>, so returning to a bare "/" after
+	// searching left the stale results on screen until a full page refresh.
+	// Making this reactive to $page.url keeps it in sync with the URL.
+	$: {
+		const q = $page.url.searchParams.get('q') ?? '';
+		if (q !== query) {
+			if (q) {
+				runSearch(q);
+			} else {
+				query = '';
+				searched = false;
+				results = [];
+				errorMsg = '';
+			}
+		}
+	}
 </script>
 
 {#if !searched}

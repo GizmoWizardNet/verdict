@@ -1,6 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { supabaseAdmin } from '$lib/server/supabaseAdmin';
+import { computeUserBadges } from '$lib/server/badges';
 
 interface VoteBody {
 	url: string;
@@ -69,5 +70,15 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.eq('id', site.id)
 		.single();
 
-	return json({ siteId: site.id, ...updated });
+	// Only bother figuring out badges when a vote was actually cast (not a
+	// retraction) — the client uses this to show "achievement unlocked"
+	// toasts. It compares against what it already knows was earned
+	// (localStorage), so sending the full earned list every time is fine.
+	let earnedBadges: { id: string; label: string }[] = [];
+	if (body.value !== 0) {
+		const badges = await computeUserBadges(supabaseAdmin, session.user.id);
+		earnedBadges = badges.filter((b) => b.earned).map(({ id, label }) => ({ id, label }));
+	}
+
+	return json({ siteId: site.id, ...updated, earnedBadges });
 };

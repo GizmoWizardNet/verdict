@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { ChevronUp, ChevronDown, Flame, Target, Award } from 'lucide-svelte';
+	import { badgeIcons, defaultBadgeIcon } from '$lib/badgeIcons';
 	export let data: PageData;
 </script>
 
@@ -37,7 +38,10 @@
 	<h2 class="section-title"><Award size={16} /> Badges</h2>
 	<div class="badges">
 		{#each data.badges as badge}
-			<span class="badge" class:earned={badge.earned}>{badge.label}</span>
+			<span class="badge" class:earned={badge.earned}>
+				<svelte:component this={badgeIcons[badge.id] ?? defaultBadgeIcon} size={14} />
+				{badge.label}
+			</span>
 		{/each}
 	</div>
 </div>
@@ -159,6 +163,12 @@
 	}
 	.section-title.standalone {
 		margin-top: 2rem;
+		/* These headers sit directly on the page background, while every card
+		   below them (.tile, .site-row, .badge-shelf) has ~1.2–1.4rem of
+		   horizontal padding. Without matching padding here the heading text
+		   starts flush against the page edge, well to the left of the
+		   indented content beneath it. */
+		padding-left: 1.3rem;
 	}
 	.badge-shelf {
 		padding: 1.2rem 1.3rem;
@@ -171,6 +181,9 @@
 		gap: 0.5rem;
 	}
 	.badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
 		font-size: 0.8rem;
 		font-weight: 600;
 		padding: 0.4rem 0.75rem;

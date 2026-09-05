@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { supabaseAdmin } from '$lib/server/supabaseAdmin';
+import { computeUserBadges } from '$lib/server/badges';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const session = await locals.getSession();
@@ -48,20 +49,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	const verdictCount = castVotes.length;
-	const badges = [
-		{ id: 'first-verdict', label: 'First Verdict', earned: verdictCount >= 1 },
-		{ id: 'ten-verdicts', label: '10 Verdicts', earned: verdictCount >= 10 },
-		{ id: 'fifty-verdicts', label: '50 Verdicts', earned: verdictCount >= 50 },
-		{ id: 'hundred-verdicts', label: '100 Verdicts', earned: verdictCount >= 100 },
-		{ id: 'streak-3', label: '3-Day Streak', earned: streak >= 3 },
-		{ id: 'streak-7', label: '7-Day Streak', earned: streak >= 7 },
-		{
-			id: 'sharp-juror',
-			label: 'Sharp Juror',
-			earned: agreementEligible >= 10 && (agreementRate ?? 0) >= 90
-		},
-		{ id: 'first-index', label: 'First Site Indexed', earned: (sites?.length ?? 0) >= 1 }
-	];
+	// Same computation the vote endpoint uses to decide which achievement
+	// toasts to fire, so the badge shelf here always matches.
+	const badges = await computeUserBadges(supabaseAdmin, session.user.id);
 
 	return {
 		sites: sites ?? [],
