@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { session, signInWith, signOut } from '$lib/stores/auth';
 	import { LogOut } from 'lucide-svelte';
+	import GoogleMark from '$lib/icons/GoogleMark.svelte';
+	import DiscordMark from '$lib/icons/DiscordMark.svelte';
 
 	let open = false;
 </script>
@@ -25,8 +27,12 @@
 		<button class="glass-btn accent" on:click={() => (open = !open)}>Sign in</button>
 		{#if open}
 			<div class="glass dropdown">
-				<button class="glass-btn" on:click={() => signInWith('google')}>Continue with Google</button>
-				<button class="glass-btn" on:click={() => signInWith('discord')}>Continue with Discord</button>
+				<button class="glass-btn" on:click={() => signInWith('google')}>
+					<GoogleMark size={16} /> Continue with Google
+				</button>
+				<button class="glass-btn" on:click={() => signInWith('discord')}>
+					<DiscordMark size={16} /> Continue with Discord
+				</button>
 			</div>
 		{/if}
 	{/if}
