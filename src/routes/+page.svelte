@@ -56,7 +56,7 @@
 	{:else if errorMsg}
 		<p class="error glass">{errorMsg}</p>
 	{:else if results.length === 0}
-		<p class="empty glass">No results yet. Try a different query, or index a site yourself.</p>
+		<p class="empty glass">No results :(</p>
 	{:else}
 		<div class="results">
 			{#each results as result (result.url)}

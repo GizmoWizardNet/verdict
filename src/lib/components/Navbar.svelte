@@ -1,6 +1,7 @@
 <script lang="ts">
 	import VerdictMark from '$lib/icons/VerdictMark.svelte';
 	import AuthPanel from '$lib/components/AuthPanel.svelte';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { BarChart3, PlusCircle } from 'lucide-svelte';
 </script>
 
@@ -13,6 +14,7 @@
 	<div class="links">
 		<a href="/stats" class="glass-btn"><BarChart3 size={16} /> Stats</a>
 		<a href="/index-site" class="glass-btn"><PlusCircle size={16} /> Index a site</a>
+		<ThemeToggle />
 		<AuthPanel />
 	</div>
 </nav>
@@ -30,6 +32,10 @@
 		justify-content: space-between;
 		padding: 0.75rem 1.25rem;
 		border-radius: var(--radius-lg);
+		/* .glass sets overflow: hidden to clip its shine pseudo-element, but that
+		   also clips the absolutely-positioned sign-in dropdown rendered inside
+		   this nav. Override it here so the dropdown isn't cut off/hidden. */
+		overflow: visible;
 	}
 	.brand {
 		display: flex;

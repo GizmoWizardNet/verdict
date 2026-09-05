@@ -1,17 +1,11 @@
-/* ==========================================================================
-   VERDICT — design tokens
-   Aero (Vista/7) glass revival + glassmorphism, tuned to the brand palette.
-   ========================================================================== */
-
-:root {
+:root,
+:root[data-theme='dark'] {
 	--accent: #1da1f2;
 	--accent-soft: rgba(29, 161, 242, 0.35);
 	--accent-glow: rgba(29, 161, 242, 0.55);
 	--ink: #0a0a0a;
 	--paper: #ffffff;
 
-	/* Aero glass is never flat white/black — it's tinted, layered glass over a
-	   dark backdrop, so the accent color can shine through the frost. */
 	--bg-deep: #05070a;
 	--bg-mid: #0b1420;
 	--glass-fill: rgba(255, 255, 255, 0.06);
@@ -20,6 +14,32 @@
 	--glass-shine: rgba(255, 255, 255, 0.55);
 	--ink-soft: rgba(255, 255, 255, 0.68);
 	--ink-faint: rgba(255, 255, 255, 0.42);
+
+	--radius-lg: 20px;
+	--radius-md: 14px;
+	--radius-sm: 9px;
+
+	--font-body: 'Lexend', system-ui, sans-serif;
+	--font-display: 'Archivo Black', 'Lexend', system-ui, sans-serif;
+
+	--ease-aero: cubic-bezier(0.22, 1.1, 0.36, 1);
+}
+
+:root[data-theme='light'] {
+	--accent: #0a85d6;
+	--accent-soft: rgba(10, 133, 214, 0.25);
+	--accent-glow: rgba(10, 133, 214, 0.4);
+	--ink: #0a0a0a;
+	--paper: #0a0a0a;
+
+	--bg-deep: #eef2f6;
+	--bg-mid: #eef2f6;
+	--glass-fill: rgba(255, 255, 255, 0.55);
+	--glass-fill-strong: rgba(255, 255, 255, 0.85);
+	--glass-border: rgba(10, 20, 30, 0.12);
+	--glass-shine: rgba(255, 255, 255, 0.8);
+	--ink-soft: rgba(10, 10, 10, 0.68);
+	--ink-faint: rgba(10, 10, 10, 0.42);
 
 	--radius-lg: 20px;
 	--radius-md: 14px;
@@ -49,48 +69,7 @@ body {
 body {
 	position: relative;
 	overflow-x: hidden;
-	background:
-		radial-gradient(1200px 800px at 15% -10%, rgba(29, 161, 242, 0.22), transparent 60%),
-		radial-gradient(1000px 700px at 110% 10%, rgba(29, 161, 242, 0.12), transparent 55%),
-		linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 100%);
-}
-
-/* Floating aero orbs drifting in the background — the one "boisterous" motion
-   moment for the whole app; everything else stays calm. */
-.aero-orbs {
-	position: fixed;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-	overflow: hidden;
-}
-
-.aero-orb {
-	position: absolute;
-	border-radius: 50%;
-	background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), var(--accent-soft) 45%, transparent 70%);
-	filter: blur(1px);
-	opacity: 0.5;
-	animation: drift 26s ease-in-out infinite;
-}
-
-@keyframes drift {
-	0%,
-	100% {
-		transform: translate(0, 0) scale(1);
-	}
-	33% {
-		transform: translate(3vw, -4vh) scale(1.08);
-	}
-	66% {
-		transform: translate(-2vw, 3vh) scale(0.95);
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.aero-orb {
-		animation: none;
-	}
+	background: var(--bg-deep);
 }
 
 h1,
@@ -116,7 +95,6 @@ a {
 	color: var(--accent);
 }
 
-/* ---- Glass panel primitive -------------------------------------------- */
 .glass {
 	position: relative;
 	background: linear-gradient(180deg, var(--glass-fill-strong), var(--glass-fill));
@@ -131,8 +109,6 @@ a {
 	overflow: hidden;
 }
 
-/* The Aero "shine cap": a glossy highlight across the top third of a panel,
-   the signature Vista/7 glass tell. */
 .glass::before {
 	content: '';
 	position: absolute;
@@ -175,7 +151,6 @@ a {
 	color: #05131c;
 }
 
-/* "Jelly" press — the quirky micro-interaction used on vote buttons */
 @keyframes jelly {
 	0% {
 		transform: scale(1, 1);
