@@ -9,12 +9,9 @@
 	$: currentPath = $page.url.pathname;
 </script>
 
-<!-- Mobile top bar: brand + hamburger. Hidden on desktop, where the sidebar
-     itself is always visible. -->
 <div class="glass mobile-bar">
 	<a href="/" class="brand" on:click={() => (mobileOpen = false)}>
-		<VerdictMark size={26} />
-		<span class="wordmark display">VERDICT</span>
+		<VerdictMark size={35} />
 	</a>
 	<button class="glass-btn icon-btn" on:click={() => (mobileOpen = !mobileOpen)} aria-label="Menu">
 		{#if mobileOpen}<X size={18} />{:else}<Menu size={18} />{/if}
