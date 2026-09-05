@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import VerdictMark from '$lib/icons/VerdictMark.svelte';
-	import ProfileMenu from '$lib/components/ProfileMenu.svelte';
-	import { House, PlusCircle, Menu, X } from 'lucide-svelte';
+	import { page } from "$app/stores";
+	import VerdictMark from "$lib/icons/VerdictMark.svelte";
+	import ProfileMenu from "$lib/components/ProfileMenu.svelte";
+	import { House, PlusCircle, Menu, X } from "lucide-svelte";
 
 	let mobileOpen = false;
 
@@ -13,13 +13,21 @@
 	<a href="/" class="brand" on:click={() => (mobileOpen = false)}>
 		<VerdictMark size={35} />
 	</a>
-	<button class="glass-btn icon-btn" on:click={() => (mobileOpen = !mobileOpen)} aria-label="Menu">
+	<button
+		class="glass-btn icon-btn"
+		on:click={() => (mobileOpen = !mobileOpen)}
+		aria-label="Menu"
+	>
 		{#if mobileOpen}<X size={18} />{:else}<Menu size={18} />{/if}
 	</button>
 </div>
 
 {#if mobileOpen}
-	<button class="scrim" aria-label="Close menu" on:click={() => (mobileOpen = false)} />
+	<button
+		class="scrim"
+		aria-label="Close menu"
+		on:click={() => (mobileOpen = false)}
+	/>
 {/if}
 
 <aside class="glass sidebar" class:open={mobileOpen}>
@@ -29,14 +37,19 @@
 	</a>
 
 	<nav class="nav-links">
-		<a href="/" class="nav-link" class:active={currentPath === '/'} on:click={() => (mobileOpen = false)}>
+		<a
+			href="/"
+			class="nav-link"
+			class:active={currentPath === "/"}
+			on:click={() => (mobileOpen = false)}
+		>
 			<House size={20} />
 			<span>Home</span>
 		</a>
 		<a
 			href="/index-site"
 			class="nav-link"
-			class:active={currentPath === '/index-site'}
+			class:active={currentPath === "/index-site"}
 			on:click={() => (mobileOpen = false)}
 		>
 			<PlusCircle size={20} />
@@ -62,9 +75,6 @@
 		flex-direction: column;
 		padding: 1.3rem 1.1rem;
 		border-radius: var(--radius-lg);
-		/* .glass sets overflow: hidden to clip its shine pseudo-element, but that
-		   also clips the profile menu's dropdown, which opens upward past the
-		   sidebar's own edge. Override it here. */
 		overflow: visible;
 	}
 	.brand {
@@ -84,6 +94,7 @@
 		flex-direction: column;
 		gap: 0.3rem;
 	}
+
 	.nav-link {
 		display: flex;
 		align-items: center;
@@ -94,14 +105,24 @@
 		color: var(--ink-soft);
 		font-weight: 600;
 		font-size: 1rem;
-		transition: background 0.16s var(--ease-aero), color 0.16s var(--ease-aero);
+
+		transition:
+			background 0.16s var(--ease-aero),
+			color 0.16s var(--ease-aero),
+			transform 0.2s var(--ease-aero);
 	}
+
 	.nav-link:hover {
 		background: var(--glass-fill);
 		color: var(--paper);
+		transform: rotate(2deg);
 	}
 	.nav-link.active {
-		background: linear-gradient(180deg, var(--glass-fill-strong), var(--glass-fill));
+		background: linear-gradient(
+			180deg,
+			var(--glass-fill-strong),
+			var(--glass-fill)
+		);
 		color: var(--paper);
 		box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset;
 	}
