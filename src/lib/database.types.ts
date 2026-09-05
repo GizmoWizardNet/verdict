@@ -51,7 +51,15 @@ export interface Database {
 					created_at?: string;
 				};
 				Update: Partial<Database['public']['Tables']['votes']['Insert']>;
-				Relationships: [];
+				Relationships: [
+					{
+						foreignKeyName: 'votes_site_id_fkey';
+						columns: ['site_id'];
+						isOneToOne: false;
+						referencedRelation: 'sites';
+						referencedColumns: ['id'];
+					}
+				];
 			};
 			search_log: {
 				Row: {
