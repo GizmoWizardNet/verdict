@@ -20,7 +20,7 @@
 		</button>
 		{#if open}
 			<div class="glass dropdown">
-				<button class="glass-btn" on:click={signOut}><LogOut size={16} /> Sign out</button>
+				<button class="glass-btn danger" on:click={signOut}><LogOut size={16} /> Sign out</button>
 			</div>
 		{/if}
 	{:else}
@@ -69,5 +69,13 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
+	}
+	.dropdown .glass-btn.danger {
+		color: #ff6b6b;
+		border-color: rgba(255, 107, 107, 0.35);
+	}
+	.dropdown .glass-btn.danger:hover {
+		background: linear-gradient(180deg, rgba(255, 107, 107, 0.25), rgba(255, 107, 107, 0.08));
+		box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 10px 22px -8px rgba(255, 107, 107, 0.45);
 	}
 </style>
