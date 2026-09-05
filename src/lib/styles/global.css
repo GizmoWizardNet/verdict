@@ -1,0 +1,223 @@
+/* ==========================================================================
+   VERDICT — design tokens
+   Aero (Vista/7) glass revival + glassmorphism, tuned to the brand palette.
+   ========================================================================== */
+
+:root {
+	--accent: #1da1f2;
+	--accent-soft: rgba(29, 161, 242, 0.35);
+	--accent-glow: rgba(29, 161, 242, 0.55);
+	--ink: #0a0a0a;
+	--paper: #ffffff;
+
+	/* Aero glass is never flat white/black — it's tinted, layered glass over a
+	   dark backdrop, so the accent color can shine through the frost. */
+	--bg-deep: #05070a;
+	--bg-mid: #0b1420;
+	--glass-fill: rgba(255, 255, 255, 0.06);
+	--glass-fill-strong: rgba(255, 255, 255, 0.12);
+	--glass-border: rgba(255, 255, 255, 0.28);
+	--glass-shine: rgba(255, 255, 255, 0.55);
+	--ink-soft: rgba(255, 255, 255, 0.68);
+	--ink-faint: rgba(255, 255, 255, 0.42);
+
+	--radius-lg: 20px;
+	--radius-md: 14px;
+	--radius-sm: 9px;
+
+	--font-body: 'Lexend', system-ui, sans-serif;
+	--font-display: 'Archivo Black', 'Lexend', system-ui, sans-serif;
+
+	--ease-aero: cubic-bezier(0.22, 1.1, 0.36, 1);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	min-height: 100%;
+	background: var(--bg-deep);
+	color: var(--paper);
+	font-family: var(--font-body);
+	-webkit-font-smoothing: antialiased;
+}
+
+body {
+	position: relative;
+	overflow-x: hidden;
+	background:
+		radial-gradient(1200px 800px at 15% -10%, rgba(29, 161, 242, 0.22), transparent 60%),
+		radial-gradient(1000px 700px at 110% 10%, rgba(29, 161, 242, 0.12), transparent 55%),
+		linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 100%);
+}
+
+/* Floating aero orbs drifting in the background — the one "boisterous" motion
+   moment for the whole app; everything else stays calm. */
+.aero-orbs {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+.aero-orb {
+	position: absolute;
+	border-radius: 50%;
+	background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), var(--accent-soft) 45%, transparent 70%);
+	filter: blur(1px);
+	opacity: 0.5;
+	animation: drift 26s ease-in-out infinite;
+}
+
+@keyframes drift {
+	0%,
+	100% {
+		transform: translate(0, 0) scale(1);
+	}
+	33% {
+		transform: translate(3vw, -4vh) scale(1.08);
+	}
+	66% {
+		transform: translate(-2vw, 3vh) scale(0.95);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.aero-orb {
+		animation: none;
+	}
+}
+
+h1,
+h2,
+h3,
+.display {
+	font-family: var(--font-display);
+	letter-spacing: 0.01em;
+	line-height: 1.05;
+	margin: 0;
+}
+
+p,
+span,
+label,
+input,
+button,
+a {
+	font-family: var(--font-body);
+}
+
+a {
+	color: var(--accent);
+}
+
+/* ---- Glass panel primitive -------------------------------------------- */
+.glass {
+	position: relative;
+	background: linear-gradient(180deg, var(--glass-fill-strong), var(--glass-fill));
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-lg);
+	backdrop-filter: blur(18px) saturate(160%);
+	-webkit-backdrop-filter: blur(18px) saturate(160%);
+	box-shadow:
+		0 1px 0 rgba(255, 255, 255, 0.5) inset,
+		0 18px 40px -12px rgba(0, 0, 0, 0.55),
+		0 0 0 1px rgba(0, 0, 0, 0.2);
+	overflow: hidden;
+}
+
+/* The Aero "shine cap": a glossy highlight across the top third of a panel,
+   the signature Vista/7 glass tell. */
+.glass::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 46%;
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0));
+	border-radius: var(--radius-lg) var(--radius-lg) 50% 50% / var(--radius-lg) var(--radius-lg) 100% 100%;
+	pointer-events: none;
+}
+
+.glass-btn {
+	position: relative;
+	font-family: var(--font-body);
+	font-weight: 600;
+	color: var(--paper);
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.04));
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-sm);
+	padding: 0.65rem 1.1rem;
+	cursor: pointer;
+	backdrop-filter: blur(10px);
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset, 0 6px 16px -6px rgba(0, 0, 0, 0.5);
+	transition: transform 0.16s var(--ease-aero), box-shadow 0.16s var(--ease-aero), background 0.16s;
+}
+
+.glass-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 10px 22px -8px var(--accent-glow);
+}
+
+.glass-btn:active {
+	transform: translateY(0) scale(0.97);
+}
+
+.glass-btn.accent {
+	background: linear-gradient(180deg, #4fc3ff, var(--accent));
+	border-color: rgba(255, 255, 255, 0.5);
+	color: #05131c;
+}
+
+/* "Jelly" press — the quirky micro-interaction used on vote buttons */
+@keyframes jelly {
+	0% {
+		transform: scale(1, 1);
+	}
+	30% {
+		transform: scale(1.24, 0.78);
+	}
+	55% {
+		transform: scale(0.88, 1.14);
+	}
+	75% {
+		transform: scale(1.06, 0.96);
+	}
+	100% {
+		transform: scale(1, 1);
+	}
+}
+
+.jelly-pop {
+	animation: jelly 0.5s var(--ease-aero);
+}
+
+.scrollbar-glass::-webkit-scrollbar {
+	width: 10px;
+}
+
+.scrollbar-glass::-webkit-scrollbar-thumb {
+	background: var(--glass-fill-strong);
+	border-radius: 8px;
+	border: 1px solid var(--glass-border);
+}
+
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}

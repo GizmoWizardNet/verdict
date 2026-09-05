@@ -1,0 +1,42 @@
+services:
+  verdict-app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: verdict-app
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - PORT=3000
+      - SEARXNG_BASE_URL=http://searxng:8080
+    depends_on:
+      - searxng
+    networks:
+      - verdict-net
+
+  searxng:
+    image: searxng/searxng:latest
+    container_name: verdict-searxng
+    restart: unless-stopped
+    volumes:
+      - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
+    environment:
+      - SEARXNG_BASE_URL=http://searxng:8080/
+    networks:
+      - verdict-net
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: verdict-cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - verdict-app
+    networks:
+      - verdict-net
+
+networks:
+  verdict-net:
+    driver: bridge
