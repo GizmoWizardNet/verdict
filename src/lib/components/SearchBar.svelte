@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { Search, X } from 'lucide-svelte';
+	import { playSearch, startTyping, stopTyping } from '$lib/sfx';
 
 	export let value = '';
 	export let autofocus = false;
@@ -13,6 +14,7 @@
 	let debounceTimer: ReturnType<typeof setTimeout>;
 
 	function onInput() {
+		startTyping();
 		clearTimeout(debounceTimer);
 		highlighted = -1;
 		if (!value.trim()) {
@@ -29,6 +31,7 @@
 
 	function submit(query = value) {
 		if (!query.trim()) return;
+		stopTyping();
 		value = query;
 		showSuggestions = false;
 		dispatch('search', query.trim());
@@ -65,16 +68,28 @@
 			on:input={onInput}
 			on:keydown={onKeydown}
 			on:focus={() => (showSuggestions = suggestions.length > 0)}
-			on:blur={() => setTimeout(() => (showSuggestions = false), 120)}
+			on:blur={() => {
+				stopTyping();
+				setTimeout(() => (showSuggestions = false), 120);
+			}}
 			aria-autocomplete="list"
 			aria-expanded={showSuggestions}
 		/>
 		{#if value}
-			<button class="clear" on:click={() => (value = '') } aria-label="Clear search">
+			<button class="clear" on:click={() => (value = '')} aria-label="Clear search">
 				<X size={16} />
 			</button>
 		{/if}
-		<button class="glass-btn accent go" on:click={() => submit()}>Seek</button>
+		<button
+			class="glass-btn accent go"
+			data-sfx-skip
+			on:click={() => {
+				playSearch();
+				submit();
+			}}
+		>
+			Seek
+		</button>
 	</div>
 
 	{#if showSuggestions}

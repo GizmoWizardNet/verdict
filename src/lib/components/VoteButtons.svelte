@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ChevronUp, ChevronDown, Gavel } from 'lucide-svelte';
 	import { session, signInWith } from '$lib/stores/auth';
+	import { playVerdictDeliver, playClick } from '$lib/sfx';
 
 	export let url: string;
 	export let title: string;
@@ -48,6 +49,7 @@
 		}
 
 		if (next !== 0) {
+			playVerdictDeliver();
 			strikeLabel = wasUnrated ? 'FIRST VERDICT' : 'VERDICT DELIVERED';
 			strike = true;
 			setTimeout(() => (strike = false), 650);
@@ -58,6 +60,8 @@
 				shockDown = true;
 				setTimeout(() => (shockDown = false), 550);
 			}
+		} else {
+			playClick();
 		}
 
 		try {
@@ -93,6 +97,7 @@
 		class="vote-btn"
 		class:selected={myVote === 1}
 		class:jelly-pop={jellyUp}
+		data-sfx-skip
 		on:click={() => vote(1)}
 		aria-pressed={myVote === 1}
 		aria-label="Upvote"
@@ -105,6 +110,7 @@
 		class="vote-btn down"
 		class:selected={myVote === -1}
 		class:jelly-pop={jellyDown}
+		data-sfx-skip
 		on:click={() => vote(-1)}
 		aria-pressed={myVote === -1}
 		aria-label="Downvote"
@@ -171,6 +177,9 @@
 			transform: scale(1);
 		}
 	}
+
+	/* Shockwave ring bursting off the button on a fresh verdict — the "harder"
+	   tactile hit, distinct from the softer jelly press. */
 	.shockwave {
 		position: absolute;
 		inset: 0;
@@ -193,6 +202,7 @@
 		}
 	}
 
+	/* Floating "VERDICT DELIVERED" callout above the vote stack. */
 	.strike-label {
 		position: absolute;
 		top: -1.9rem;

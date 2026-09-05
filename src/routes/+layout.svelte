@@ -5,6 +5,7 @@
 	import { initAuthListener } from '$lib/stores/auth';
 	import { theme } from '$lib/stores/theme';
 	import { supabase } from '$lib/supabaseClient';
+	import { playClick } from '$lib/sfx';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import type { LayoutData } from './$types';
 
@@ -13,18 +14,23 @@
 	onMount(() => {
 		initAuthListener(data.session);
 		theme.init();
-
-		// The browser client updates its own (cookie-backed) session on sign-in/
-		// sign-out/refresh. Re-run +layout.server.ts's `depends('supabase:auth')`
-		// load so server-rendered pages (e.g. /stats) and API routes that read
-		// locals.getSession() see the change without a full page reload.
+		
 		const { data: sub } = supabase.auth.onAuthStateChange(() => {
 			invalidate('supabase:auth');
 		});
 
 		return () => sub.subscription.unsubscribe();
 	});
+
+	function onGlobalClick(e: MouseEvent) {
+		if (!(e.target instanceof Element)) return;
+		const trigger = e.target.closest('button, a.glass-btn, .nav-link');
+		if (!trigger || trigger.hasAttribute('data-sfx-skip')) return;
+		playClick();
+	}
 </script>
+
+<svelte:window on:click|capture={onGlobalClick} />
 
 <svelte:head>
 	<title>Verdict — search the change</title>
