@@ -177,9 +177,6 @@
 			transform: scale(1);
 		}
 	}
-
-	/* Shockwave ring bursting off the button on a fresh verdict — the "harder"
-	   tactile hit, distinct from the softer jelly press. */
 	.shockwave {
 		position: absolute;
 		inset: 0;
