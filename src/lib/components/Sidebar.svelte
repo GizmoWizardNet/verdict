@@ -115,7 +115,7 @@
 	.nav-link:hover {
 		background: var(--glass-fill);
 		color: var(--paper);
-		transform: rotate(2deg);
+		transform: rotate(3deg);
 	}
 	.nav-link.active {
 		background: linear-gradient(
