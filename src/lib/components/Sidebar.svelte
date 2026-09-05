@@ -12,6 +12,7 @@
 <div class="glass mobile-bar">
 	<a href="/" class="brand" on:click={() => (mobileOpen = false)}>
 		<VerdictMark size={35} />
+		<span class="wordmark display">VERDICT</span>
 	</a>
 	<button
 		class="glass-btn icon-btn"
@@ -32,8 +33,7 @@
 
 <aside class="glass sidebar" class:open={mobileOpen}>
 	<a href="/" class="brand" on:click={() => (mobileOpen = false)}>
-		<VerdictMark size={30} />
-		<span class="wordmark display">VERDICT</span>
+		<VerdictMark size={35} />
 	</a>
 
 	<nav class="nav-links">
