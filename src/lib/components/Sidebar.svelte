@@ -59,11 +59,11 @@
 		top: 1rem;
 		left: 1rem;
 		bottom: 1rem;
-		width: 250px;
+		width: 300px;
 		z-index: 30;
 		display: flex;
 		flex-direction: column;
-		padding: 1.1rem 0.9rem;
+		padding: 1.3rem 1.1rem;
 		border-radius: var(--radius-lg);
 		/* .glass sets overflow: hidden to clip its shine pseudo-element, but that
 		   also clips the profile menu's dropdown, which opens upward past the
@@ -90,13 +90,13 @@
 	.nav-link {
 		display: flex;
 		align-items: center;
-		gap: 0.9rem;
-		padding: 0.7rem 0.75rem;
+		gap: 1rem;
+		padding: 0.8rem 0.85rem;
 		border-radius: var(--radius-sm);
 		text-decoration: none;
 		color: var(--ink-soft);
 		font-weight: 600;
-		font-size: 0.95rem;
+		font-size: 1rem;
 		transition: background 0.16s var(--ease-aero), color 0.16s var(--ease-aero);
 	}
 	.nav-link:hover {
@@ -158,7 +158,7 @@
 			left: 0;
 			bottom: 0;
 			height: 100%;
-			width: min(280px, 82vw);
+			width: min(320px, 84vw);
 			border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
 			transform: translateX(-105%);
 			transition: transform 0.24s var(--ease-aero);
