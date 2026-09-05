@@ -74,7 +74,7 @@
 				<X size={16} />
 			</button>
 		{/if}
-		<button class="glass-btn accent go" on:click={() => submit()}>Search</button>
+		<button class="glass-btn accent go" on:click={() => submit()}>Seek</button>
 	</div>
 
 	{#if showSuggestions}
