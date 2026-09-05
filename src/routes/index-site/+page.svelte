@@ -40,8 +40,7 @@
 <div class="glass panel">
 	<h1 class="display">INDEX A SITE</h1>
 	<p class="sub">
-		Know a good site SearXNG isn't surfacing? Add it directly. It enters Verdict unrated —
-		the community takes it from there.
+		Add a site that isn't directly in SearXNG's index yet. Verdict will fetch it, index it, and make it searchable for everyone. and then boom boom skibidi uh
 	</p>
 
 	<form on:submit|preventDefault={submit}>
