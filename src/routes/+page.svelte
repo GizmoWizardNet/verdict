@@ -5,6 +5,7 @@
 	import ResultCard from '$lib/components/ResultCard.svelte';
 	import GlassOrbLoader from '$lib/icons/GlassOrbLoader.svelte';
 	import VerdictMark from '$lib/icons/VerdictMark.svelte';
+	import { Github } from 'lucide-svelte';
 
 	let query = '';
 	let results: any[] = [];
@@ -12,6 +13,10 @@
 	let searched = false;
 	let errorMsg = '';
 
+	// Tracks the "q" param we last synced from, independent of the `query`
+	// variable (which is also bound to the search input and changes on every
+	// keystroke). Comparing against `query` directly caused the block below to
+	// re-fire while typing and reset the input back to empty.
 	let lastUrlQuery: string | null = null;
 
 	async function runSearch(q: string) {
@@ -33,6 +38,13 @@
 		}
 	}
 
+	// SvelteKit reuses this same component instance for every navigation to "/"
+	// (e.g. clicking the sidebar's Home link, or the browser back/forward
+	// buttons) — it doesn't get remounted. The old code only read the "q"
+	// query param once at the top of <script>, so returning to a bare "/"
+	// after searching left the stale results on screen until a full page
+	// refresh. This only reacts to $page.url actually changing (tracked via
+	// lastUrlQuery), not to the user typing.
 	$: {
 		const q = $page.url.searchParams.get('q') ?? '';
 		if (q !== lastUrlQuery) {
@@ -56,6 +68,18 @@
 		<p class="tagline">search the change</p>
 		<div class="hero-search">
 			<SearchBar bind:value={query} autofocus on:search={(e) => runSearch(e.detail)} />
+		</div>
+		<div class="hero-footer">
+			<span class="hero-credit">a product of GizmoWizardNet 2026</span>
+			<a
+				class="glass-btn github-btn"
+				href="https://github.com/GizmoWizardNet/verdict"
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				<Github size={16} />
+				GitHub
+			</a>
 		</div>
 	</section>
 {:else}
@@ -103,6 +127,24 @@
 	}
 	.hero-search {
 		width: min(560px, 90vw);
+	}
+	.hero-footer {
+		display: flex;
+		align-items: center;
+		gap: 0.7rem;
+		margin-top: 0.4rem;
+	}
+	.hero-credit {
+		font-size: 0.78rem;
+		color: var(--ink-faint);
+		letter-spacing: 0.01em;
+	}
+	.github-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.35rem 0.75rem;
+		font-size: 0.8rem;
 	}
 	.results-search {
 		margin: 1.5rem 0;
