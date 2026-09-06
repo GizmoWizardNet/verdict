@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { browser } from '$app/environment';
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import ResultCard from '$lib/components/ResultCard.svelte';
 	import GlassOrbLoader from '$lib/icons/GlassOrbLoader.svelte';
@@ -13,10 +14,6 @@
 	let searched = false;
 	let errorMsg = '';
 
-	// Tracks the "q" param we last synced from, independent of the `query`
-	// variable (which is also bound to the search input and changes on every
-	// keystroke). Comparing against `query` directly caused the block below to
-	// re-fire while typing and reset the input back to empty.
 	let lastUrlQuery: string | null = null;
 
 	async function runSearch(q: string) {
@@ -24,7 +21,10 @@
 		loading = true;
 		errorMsg = '';
 		searched = true;
-		goto(`/?q=${encodeURIComponent(q)}`, { replaceState: true, keepFocus: true, noScroll: true });
+
+		if (browser) {
+			goto(`/?q=${encodeURIComponent(q)}`, { replaceState: true, keepFocus: true, noScroll: true });
+		}
 		try {
 			const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
 			if (!res.ok) throw new Error(await res.text());
@@ -37,14 +37,7 @@
 			loading = false;
 		}
 	}
-
-	// SvelteKit reuses this same component instance for every navigation to "/"
-	// (e.g. clicking the sidebar's Home link, or the browser back/forward
-	// buttons) — it doesn't get remounted. The old code only read the "q"
-	// query param once at the top of <script>, so returning to a bare "/"
-	// after searching left the stale results on screen until a full page
-	// refresh. This only reacts to $page.url actually changing (tracked via
-	// lastUrlQuery), not to the user typing.
+	
 	$: {
 		const q = $page.url.searchParams.get('q') ?? '';
 		if (q !== lastUrlQuery) {
