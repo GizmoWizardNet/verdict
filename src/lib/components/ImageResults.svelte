@@ -85,7 +85,7 @@
 				</div>
 			</div>
 			<div class="lightbox-image">
-				<Magnifier src={active.img_src} alt={active.title} width="100%" height="auto" mgShape="square" />
+				<Magnifier src={active.img_src} alt={active.title} width="100%" height="auto" mgShape="circle" />
 			</div>
 		</div>
 	</div>
