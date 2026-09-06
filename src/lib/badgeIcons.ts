@@ -12,4 +12,5 @@ export const badgeIcons: Record<string, ComponentType> = {
 	'first-index': PlusCircle
 };
 
+/** Fallback used if an unknown badge id ever shows up. */
 export const defaultBadgeIcon: ComponentType = Award;

@@ -6,6 +6,11 @@ export interface BadgeDef {
 	earned: boolean;
 }
 
+/**
+ * Computes every achievement badge for a user from scratch. Used both by the
+ * stats page (to render the badge shelf) and by the vote endpoint (to figure
+ * out whether a vote just unlocked something new, so we can toast it).
+ */
 export async function computeUserBadges(
 	supabaseAdmin: SupabaseClient,
 	userId: string

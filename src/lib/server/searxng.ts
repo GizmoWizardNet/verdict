@@ -38,6 +38,56 @@ export async function searxngSearch(query: string, pageno = 1): Promise<SearxngR
 	}));
 }
 
+export interface SearxngImageResult {
+	url: string;
+	title: string;
+	img_src: string;
+	thumbnail_src: string;
+	source: string;
+	engine?: string;
+}
+
+/**
+ * Same JSON API, but scoped to SearXNG's "images" category. img_src is the
+ * full-resolution image (hosted on the source site, not proxied), and
+ * thumbnail_src is a smaller preview — SearXNG's own image engines
+ * (Bing/Google/etc) always provide both.
+ */
+export async function searxngImageSearch(query: string, pageno = 1): Promise<SearxngImageResult[]> {
+	const url = new URL('/search', SEARXNG_BASE_URL);
+	url.searchParams.set('q', query);
+	url.searchParams.set('format', 'json');
+	url.searchParams.set('categories', 'images');
+	url.searchParams.set('pageno', String(pageno));
+
+	const res = await fetch(url, {
+		headers: { Accept: 'application/json' }
+	});
+
+	if (!res.ok) {
+		throw new Error(`SearXNG image request failed: ${res.status} ${res.statusText}`);
+	}
+
+	const data = await res.json();
+
+	return (data.results ?? [])
+		.filter((r: any) => r.img_src)
+		.map((r: any) => ({
+			url: r.url,
+			title: r.title ?? '',
+			img_src: r.img_src,
+			thumbnail_src: r.thumbnail_src || r.img_src,
+			source: r.source ?? (() => {
+				try {
+					return new URL(r.url).hostname;
+				} catch {
+					return r.url;
+				}
+			})(),
+			engine: r.engine
+		}));
+}
+
 export interface AutocompleteResult {
 	suggestions: string[];
 }
