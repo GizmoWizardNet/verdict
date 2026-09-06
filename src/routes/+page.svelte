@@ -7,7 +7,7 @@
 	import ImageResults from '$lib/components/ImageResults.svelte';
 	import GlassOrbLoader from '$lib/icons/GlassOrbLoader.svelte';
 	import VerdictMark from '$lib/icons/VerdictMark.svelte';
-	import { Github, Globe, Image as ImageIcon } from 'lucide-svelte';
+	import { Github, Globe, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-svelte';
 	import type { ImageResult } from '$lib/types/image';
 
 	let query = '';
@@ -15,6 +15,8 @@
 	let loading = false;
 	let searched = false;
 	let errorMsg = '';
+	let resultsPage = 1;
+	let resultsHasMore = false;
 
 	type Tab = 'web' | 'images';
 	let activeTab: Tab = 'web';
@@ -22,54 +24,78 @@
 	let images: ImageResult[] = [];
 	let imagesLoading = false;
 	let imagesErrorMsg = '';
-	// Which query the current `images` array belongs to, so switching to the
-	// Images tab only re-fetches when the search term actually changed.
-	let imagesForQuery: string | null = null;
+	let imagesPage = 1;
+	let imagesHasMore = false;
 
-	// Tracks the "q" param we last synced from, independent of the `query`
-	// variable (which is also bound to the search input and changes on every
-	// keystroke). Comparing against `query` directly caused the block below to
-	// re-fire while typing and reset the input back to empty.
+	let imagesForQuery: string | null = null;
+	const webCache = new Map<string, { results: any[]; hasMore: boolean }>();
+	const imageCache = new Map<string, { results: ImageResult[]; hasMore: boolean }>();
+	const cacheKey = (q: string, p: number) => `${q.toLowerCase()}::${p}`;
 	let lastUrlQuery: string | null = null;
 
-	async function runSearch(q: string) {
+	async function runSearch(q: string, pageno = 1) {
 		query = q;
-		loading = true;
+		resultsPage = pageno;
 		errorMsg = '';
 		searched = true;
 		activeTab = 'web';
-		// goto() only works in the browser. During SSR (e.g. a direct request
-		// to "/?q=..." or a server-rendered navigation), this block still runs
-		// to fetch and render results, but there's no client-side history to
-		// update, so calling goto() here would throw and crash the request.
 		if (browser) {
-			goto(`/?q=${encodeURIComponent(q)}`, { replaceState: true, keepFocus: true, noScroll: true });
+			const params = new URLSearchParams({ q });
+			if (pageno > 1) params.set('page', String(pageno));
+			goto(`/?${params}`, { replaceState: true, keepFocus: true, noScroll: true });
 		}
+
+		const key = cacheKey(q, pageno);
+		const cached = webCache.get(key);
+		if (cached) {
+			results = cached.results;
+			resultsHasMore = cached.hasMore;
+			return;
+		}
+
+		loading = true;
 		try {
-			const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+			const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&page=${pageno}`);
 			if (!res.ok) throw new Error(await res.text());
 			const data = await res.json();
 			results = data.results;
+			resultsHasMore = Boolean(data.hasMore);
+			webCache.set(key, { results, hasMore: resultsHasMore });
 		} catch (e) {
 			errorMsg = 'Search failed — check that SearXNG is reachable.';
 			results = [];
+			resultsHasMore = false;
 		} finally {
 			loading = false;
 		}
 	}
 
-	async function runImageSearch(q: string) {
-		imagesLoading = true;
+	async function runImageSearch(q: string, pageno = 1) {
+		imagesPage = pageno;
 		imagesErrorMsg = '';
+
+		const key = cacheKey(q, pageno);
+		const cached = imageCache.get(key);
+		if (cached) {
+			images = cached.results;
+			imagesHasMore = cached.hasMore;
+			imagesForQuery = q;
+			return;
+		}
+
+		imagesLoading = true;
 		try {
-			const res = await fetch(`/api/search/images?q=${encodeURIComponent(q)}`);
+			const res = await fetch(`/api/search/images?q=${encodeURIComponent(q)}&page=${pageno}`);
 			if (!res.ok) throw new Error(await res.text());
 			const data = await res.json();
 			images = data.results;
+			imagesHasMore = Boolean(data.hasMore);
 			imagesForQuery = q;
+			imageCache.set(key, { results: images, hasMore: imagesHasMore });
 		} catch (e) {
 			imagesErrorMsg = 'Image search failed — check that SearXNG is reachable.';
 			images = [];
+			imagesHasMore = false;
 		} finally {
 			imagesLoading = false;
 		}
@@ -77,33 +103,44 @@
 
 	function selectTab(tab: Tab) {
 		activeTab = tab;
-		if (tab === 'images' && imagesForQuery !== query) {
-			runImageSearch(query);
+		if (tab === 'images' && (imagesForQuery !== query || imagesPage !== 1)) {
+			runImageSearch(query, 1);
 		}
 	}
 
-	// SvelteKit reuses this same component instance for every navigation to "/"
-	// (e.g. clicking the sidebar's Home link, or the browser back/forward
-	// buttons) — it doesn't get remounted. The old code only read the "q"
-	// query param once at the top of <script>, so returning to a bare "/"
-	// after searching left the stale results on screen until a full page
-	// refresh. This only reacts to $page.url actually changing (tracked via
-	// lastUrlQuery), not to the user typing.
+	function nextResultsPage() {
+		if (resultsHasMore) runSearch(query, resultsPage + 1);
+	}
+	function prevResultsPage() {
+		if (resultsPage > 1) runSearch(query, resultsPage - 1);
+	}
+	function nextImagesPage() {
+		if (imagesHasMore) runImageSearch(query, imagesPage + 1);
+	}
+	function prevImagesPage() {
+		if (imagesPage > 1) runImageSearch(query, imagesPage - 1);
+	}
+
 	$: {
 		const q = $page.url.searchParams.get('q') ?? '';
+		const urlPage = Number($page.url.searchParams.get('page') ?? '1') || 1;
 		if (q !== lastUrlQuery) {
 			lastUrlQuery = q;
 			if (q) {
-				if (q !== query) runSearch(q);
+				if (q !== query || urlPage !== resultsPage) runSearch(q, urlPage);
 			} else {
 				query = '';
 				searched = false;
 				results = [];
 				errorMsg = '';
+				resultsPage = 1;
+				resultsHasMore = false;
 				activeTab = 'web';
 				images = [];
 				imagesForQuery = null;
 				imagesErrorMsg = '';
+				imagesPage = 1;
+				imagesHasMore = false;
 			}
 		}
 	}
@@ -162,6 +199,17 @@
 					<ResultCard {result} />
 				{/each}
 			</div>
+			<div class="pagination">
+				<button class="glass-btn" disabled={resultsPage <= 1} on:click={prevResultsPage}>
+					<ChevronLeft size={16} />
+					Prev
+				</button>
+				<span class="page-indicator">Page {resultsPage}</span>
+				<button class="glass-btn" disabled={!resultsHasMore} on:click={nextResultsPage}>
+					Next
+					<ChevronRight size={16} />
+				</button>
+			</div>
 		{/if}
 	{:else}
 		{#if imagesLoading}
@@ -173,6 +221,19 @@
 			<p class="error glass">{imagesErrorMsg}</p>
 		{:else}
 			<ImageResults {images} />
+			{#if images.length > 0}
+				<div class="pagination">
+					<button class="glass-btn" disabled={imagesPage <= 1} on:click={prevImagesPage}>
+						<ChevronLeft size={16} />
+						Prev
+					</button>
+					<span class="page-indicator">Page {imagesPage}</span>
+					<button class="glass-btn" disabled={!imagesHasMore} on:click={nextImagesPage}>
+						Next
+						<ChevronRight size={16} />
+					</button>
+				</div>
+			{/if}
 		{/if}
 	{/if}
 {/if}
@@ -255,6 +316,30 @@
 		flex-direction: column;
 		gap: 1rem;
 		max-width: 780px;
+	}
+	.pagination {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		margin: 1.5rem 0;
+		max-width: 780px;
+	}
+	.pagination .glass-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		padding: 0.5rem 0.9rem;
+		font-size: 0.85rem;
+	}
+	.pagination .glass-btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+	.page-indicator {
+		font-size: 0.82rem;
+		color: var(--ink-faint);
+		font-weight: 600;
 	}
 	.loading {
 		display: flex;
