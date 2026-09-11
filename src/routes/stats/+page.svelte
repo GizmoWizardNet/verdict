@@ -33,19 +33,6 @@
 	</div>
 </div>
 
-<!-- Badge shelf -->
-<div class="glass badge-shelf">
-	<h2 class="section-title"><Award size={16} /> Badges</h2>
-	<div class="badges">
-		{#each data.badges as badge}
-			<span class="badge" class:earned={badge.earned}>
-				<svelte:component this={badgeIcons[badge.id] ?? defaultBadgeIcon} size={14} />
-				{badge.label}
-			</span>
-		{/each}
-	</div>
-</div>
-
 <!-- Sites you indexed -->
 <h2 class="section-title standalone">Sites you've indexed</h2>
 <div class="summary">
@@ -163,11 +150,6 @@
 	}
 	.section-title.standalone {
 		margin-top: 2rem;
-		/* These headers sit directly on the page background, while every card
-		   below them (.tile, .site-row, .badge-shelf) has ~1.2–1.4rem of
-		   horizontal padding. Without matching padding here the heading text
-		   starts flush against the page edge, well to the left of the
-		   indented content beneath it. */
 		padding-left: 1.3rem;
 	}
 	.badge-shelf {

@@ -163,7 +163,6 @@
 				rel="noopener noreferrer"
 			>
 				<Github size={16} />
-				GitHub
 			</a>
 		</div>
 	</section>
